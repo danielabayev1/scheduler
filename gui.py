@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from datetime import date,timedelta
 
 TIME_SLOTS = 19
 DAY_SLOTS = 7
@@ -38,25 +39,38 @@ class Ui_MainWindow(object):
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1122, 26))
         self.menubar.setObjectName("menubar")
-        self.menuSave = QtWidgets.QMenu(self.menubar)
-        self.menuSave.setObjectName("menuSave")
-        self.menuview = QtWidgets.QMenu(self.menubar)
-        self.menuview.setObjectName("menuview")
+        self.menuFile = QtWidgets.QMenu(self.menubar)
+        self.menuFile.setObjectName("menuFile")
+        self.menuView = QtWidgets.QMenu(self.menubar)
+        self.menuView.setObjectName("menuView")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        self.actionSave = QtWidgets.QAction(MainWindow)
+        self.actionSave.setObjectName('actionSave')
         self.actiontoday_s_schedule = QtWidgets.QAction(MainWindow)
         self.actiontoday_s_schedule.setObjectName("actiontoday_s_schedule")
         self.action7_days_schedule = QtWidgets.QAction(MainWindow)
         self.action7_days_schedule.setObjectName("action7_days_schedule")
-        self.menuview.addAction(self.actiontoday_s_schedule)
-        self.menuview.addAction(self.action7_days_schedule)
-        self.menubar.addAction(self.menuSave.menuAction())
-        self.menubar.addAction(self.menuview.menuAction())
+        self.menuView.addAction(self.actiontoday_s_schedule)
+        self.menuView.addAction(self.action7_days_schedule)
+        self.menuFile.addAction(self.actionSave)
+        self.menubar.addAction(self.menuFile.menuAction())
+        self.menubar.addAction(self.menuView.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+        self.actionSave.triggered.connect(self.save)
+
+    def save(self):
+        today = (date.today()+timedelta(1)).strftime('%A')
+        for i in range(TIME_SLOTS):
+            for j in range(DAY_SLOTS):
+                activity = self.tableWidget.item(i, j)
+                if activity is not None:
+                    print(6 + i, activity.text(), today)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -78,8 +92,9 @@ class Ui_MainWindow(object):
 
         self.label.setText(_translate("MainWindow", "My Schedule"))
 
-        self.menuSave.setTitle(_translate("MainWindow", "Save"))
-        self.menuview.setTitle(_translate("MainWindow", "view"))
+        self.menuFile.setTitle(_translate("MainWindow", "File"))
+        self.menuView.setTitle(_translate("MainWindow", "View"))
+        self.actionSave.setText(_translate("MainWindow", "save"))
         self.actiontoday_s_schedule.setText(_translate("MainWindow", "today\'s schedule"))
         self.action7_days_schedule.setText(_translate("MainWindow", "weekly schedule"))
 
