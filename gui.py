@@ -1,14 +1,14 @@
 from .database import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 TIME_SLOTS = 19
 DAY_SLOTS = 7
-DAY_LIST = ['Sunday', 'Monday', 'Tuesday', "Wednesday", 'Thursday', 'Friday', 'Saturday']
+HOUR_MAPPING = {}
 
 
 class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
+    def setupUi(self, MainWindow, db_manager):
+        self.db_manager = db_manager
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1122, 798)
 
@@ -94,7 +94,7 @@ class Ui_MainWindow(object):
             item = self.tableWidget.horizontalHeaderItem(i)
             item.setText(_translate("MainWindow", f'{cur_day.strftime("%d.%m.%y")}\n{cur_day.strftime("%A")}'))
 
-        self.load_this_week_schedule()
+        self.load_curr_week_schedule()
 
         self.label.setText(_translate("MainWindow", "My Schedule"))
 
@@ -104,16 +104,31 @@ class Ui_MainWindow(object):
         self.actiontoday_s_schedule.setText(_translate("MainWindow", "today\'s schedule"))
         self.action7_days_schedule.setText(_translate("MainWindow", "weekly schedule"))
 
-    def load_this_week_schedule(self):
-        pass
+    def load_curr_week_schedule(self):
+        today = (date.today() - DBManager.INITIAL_DATE).days
+        curr_week_activites = self.db_manager.get_this_week_data()
+        for activity in curr_week_activites:
+            day_col = activity[DBManager.DATE] - today
+            hour_row = activity[DBManager.DATE]
+
+
+def load_hour_mapping():
+    for i in range(TIME_SLOTS):
+        if i == TIME_SLOTS - 1:
+            HOUR_MAPPING[i] = f'00:00'
+        elif i < 4:
+            HOUR_MAPPING[i] = f'0{i + 6}:00'
+        else:
+            HOUR_MAPPING[i] = f'{i + 6}:00'
 
 
 if __name__ == "__main__":
     import sys
-
+    load_hour_mapping()
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
+    db_manager = DBManager()
+    ui.setupUi(MainWindow, db_manager)
     MainWindow.show()
     sys.exit(app.exec_())
