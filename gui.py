@@ -1,4 +1,5 @@
-from .database import *
+import sys
+from scheduler.db_handler import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 TIME_SLOTS = 19
@@ -80,13 +81,7 @@ class Ui_MainWindow(object):
         first_hour = 6
         for i in range(TIME_SLOTS):
             item = self.tableWidget.verticalHeaderItem(i)
-            current_hour = first_hour + i
-            if current_hour == 24:
-                item.setText(_translate("MainWindow", "00:00"))
-            elif current_hour > 9:
-                item.setText(_translate("MainWindow", f"{current_hour}:00"))
-            else:
-                item.setText(_translate("MainWindow", f"0{current_hour}:00"))
+            item.setText(_translate("MainWindow", HOUR_MAPPING[i]))
 
         # formatting 'day' columns
         for i in range(DAY_SLOTS):
@@ -109,7 +104,8 @@ class Ui_MainWindow(object):
         curr_week_activites = self.db_manager.get_this_week_data()
         for activity in curr_week_activites:
             day_col = activity[DBManager.DATE] - today
-            hour_row = activity[DBManager.DATE]
+            hour_row = list(HOUR_MAPPING.keys())[list(HOUR_MAPPING.values()).index(activity[DBManager.HOUR])]
+            self.tableWidget.setItem(hour_row,day_col, QtWidgets.QTableWidgetItem(activity[DBManager.ACTIVITY]))
 
 
 def load_hour_mapping():
@@ -123,12 +119,13 @@ def load_hour_mapping():
 
 
 if __name__ == "__main__":
-    import sys
+
     load_hour_mapping()
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     db_manager = DBManager()
+    # db_manager.insert_activity((91,'12:00','zibing'))
     ui.setupUi(MainWindow, db_manager)
     MainWindow.show()
     sys.exit(app.exec_())

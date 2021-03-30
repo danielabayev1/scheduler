@@ -57,12 +57,3 @@ class DBManager:
     def close_connection(self):
         self.conn.close()
 
-
-d = DBManager()
-# d.insert_activity((90, '15:00', 'shitting'))
-# d.insert_activity((100, '15:00', 'shitting'))
-# d.insert_activity((94, '15:00', 'shitting'))
-# d.insert_activity((95, '15:00', 'shitting'))
-# d.update_activity(('24.3', 'thur', '15:00', 'peeing'))
-print(d.get_this_week_data())
-d.close_connection()
