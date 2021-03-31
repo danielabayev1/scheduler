@@ -71,7 +71,19 @@ class Ui_MainWindow(object):
             for j in range(DAY_SLOTS):
                 activity = self.tableWidget.item(i, j)
                 if activity is not None:
-                    print(6 + i, activity.text())
+
+                    day_number = int((date.today() - DBManager.INITIAL_DATE).days) + j
+                    hour = HOUR_MAPPING[i]
+                    print(day_number, hour)
+                    if (i, j) in self.in_db:
+                        # update
+                        if activity.text().strip() != '':
+                            self.db_manager.update_activity((day_number, hour, activity.text()))
+                        else:
+                            self.db_manager.delete_activity((day_number, hour))
+                    else:
+                        # insert
+                        self.db_manager.insert_activity((day_number, hour, activity.text()))
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -102,10 +114,12 @@ class Ui_MainWindow(object):
     def load_curr_week_schedule(self):
         today = (date.today() - DBManager.INITIAL_DATE).days
         curr_week_activites = self.db_manager.get_this_week_data()
+        self.in_db = []
         for activity in curr_week_activites:
             day_col = activity[DBManager.DATE] - today
             hour_row = list(HOUR_MAPPING.keys())[list(HOUR_MAPPING.values()).index(activity[DBManager.HOUR])]
-            self.tableWidget.setItem(hour_row,day_col, QtWidgets.QTableWidgetItem(activity[DBManager.ACTIVITY]))
+            self.in_db.append((hour_row, day_col))
+            self.tableWidget.setItem(hour_row, day_col, QtWidgets.QTableWidgetItem(activity[DBManager.ACTIVITY]))
 
 
 def load_hour_mapping():
@@ -118,14 +132,13 @@ def load_hour_mapping():
             HOUR_MAPPING[i] = f'{i + 6}:00'
 
 
+# todo work on edge cases
 if __name__ == "__main__":
-
     load_hour_mapping()
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     db_manager = DBManager()
-    # db_manager.insert_activity((91,'12:00','zibing'))
     ui.setupUi(MainWindow, db_manager)
     MainWindow.show()
     sys.exit(app.exec_())
