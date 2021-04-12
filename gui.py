@@ -1,5 +1,5 @@
 import sys
-from scheduler.db_handler import *
+from db_handler import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 TIME_SLOTS = 19
@@ -132,13 +132,22 @@ def load_hour_mapping():
             HOUR_MAPPING[i] = f'{i + 6}:00'
 
 
+def shell_daily_schedule(db_manager):
+    curr_week_activites = db_manager.get_this_day_data()
+    for activity in curr_week_activites:
+        print(activity[DBManager.HOUR], activity[DBManager.ACTIVITY])
+
+
 # todo work on edge cases
 if __name__ == "__main__":
     load_hour_mapping()
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
     db_manager = DBManager()
-    ui.setupUi(MainWindow, db_manager)
-    MainWindow.show()
-    sys.exit(app.exec_())
+    if sys.argv[1] == "gui":
+        app = QtWidgets.QApplication(sys.argv)
+        MainWindow = QtWidgets.QMainWindow()
+        ui = Ui_MainWindow()
+        ui.setupUi(MainWindow, db_manager)
+        MainWindow.show()
+        sys.exit(app.exec_())
+    elif sys.argv[1] == "shell":
+        shell_daily_schedule(db_manager)

@@ -20,7 +20,7 @@ class DBManager:
 
     def insert_activity(self, activity):
         self.cur.execute('INSERT INTO SCHEDULE VALUES(:DATE,:HOUR,:ACTIVITY)',
-                         {'DATE': activity[self.DATE],  'HOUR': activity[self.HOUR],
+                         {'DATE': activity[self.DATE], 'HOUR': activity[self.HOUR],
                           'ACTIVITY': activity[self.ACTIVITY]})
         self.conn.commit()
 
@@ -42,6 +42,12 @@ class DBManager:
         self.conn.commit()
         return self.cur.fetchall()
 
+    def get_this_day_data(self):
+        cur_date = int((date.today() - self.INITIAL_DATE).days)
+        self.cur.execute('SELECT * FROM SCHEDULE WHERE date=:date', {'date': cur_date})
+        self.conn.commit()
+        return self.cur.fetchall()
+
     def update_activity(self, new_activity):
         self.cur.execute('UPDATE SCHEDULE SET activity = :activity WHERE date=:date AND hour=:hour',
                          {'activity': new_activity[self.ACTIVITY], 'date': new_activity[self.DATE],
@@ -56,4 +62,3 @@ class DBManager:
 
     def close_connection(self):
         self.conn.close()
-
