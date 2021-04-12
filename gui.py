@@ -13,9 +13,10 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1122, 798)
 
-        # creating table
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+
+        # creating table
         self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
         self.tableWidget.setGeometry(QtCore.QRect(80, 150, 961, 471))
         self.tableWidget.setObjectName("tableWidget")
@@ -27,6 +28,8 @@ class Ui_MainWindow(object):
         for i in range(DAY_SLOTS):
             item = QtWidgets.QTableWidgetItem()
             self.tableWidget.setHorizontalHeaderItem(i, item)
+
+        ### This property holds how the widget shows a context menu
 
         # creating Title
         self.label = QtWidgets.QLabel(self.centralwidget)
@@ -139,6 +142,7 @@ def shell_daily_schedule(db_manager):
 
 
 # todo work on edge cases
+# 4.4 tried to add color notes to assignments
 if __name__ == "__main__":
     load_hour_mapping()
     db_manager = DBManager()
