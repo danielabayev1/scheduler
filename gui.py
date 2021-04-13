@@ -77,7 +77,6 @@ class Ui_MainWindow(object):
 
                     day_number = int((date.today() - DBManager.INITIAL_DATE).days) + j
                     hour = HOUR_MAPPING[i]
-                    print(day_number, hour)
                     if (i, j) in self.in_db:
                         # update
                         if activity.text().strip() != '':
